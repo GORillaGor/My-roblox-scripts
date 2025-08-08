@@ -1,0 +1,363 @@
+-- LocalScript: Draggable, killable GUI with toggles for WalkSpeed, Instant ProximityPrompt, InfJump, Delete Barrier/Build Folders,
+-- TpBase/Goon sets, and new default-enabled loop that triggers TouchInterest on all parts named "LockButton" every second.
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- GUI Setup
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SuperUtilityGui"
+screenGui.Parent = playerGui
+screenGui.ResetOnSpawn = false
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 400, 0, 390)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -195)
+mainFrame.BackgroundColor3 = Color3.fromRGB(33, 33, 50)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local title = Instance.new("TextLabel")
+title.Text = "Super Utility GUI"
+title.Size = UDim2.new(1, 0, 0, 28)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Parent = mainFrame
+
+local closeButton = Instance.new("TextButton")
+closeButton.Text = "X"
+closeButton.Size = UDim2.new(0, 28, 0, 28)
+closeButton.Position = UDim2.new(1, -32, 0, 0)
+closeButton.BackgroundColor3 = Color3.fromRGB(180, 50, 60)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 18
+closeButton.Parent = mainFrame
+
+local padding = Instance.new("UIPadding")
+padding.PaddingTop = UDim.new(0, 36)
+padding.PaddingLeft = UDim.new(0, 10)
+padding.Parent = mainFrame
+
+local function createToggle(name, yPos)
+    local toggleFrame = Instance.new("Frame")
+    toggleFrame.Name = name.."_Frame"
+    toggleFrame.Size = UDim2.new(1, -20, 0, 36)
+    toggleFrame.Position = UDim2.new(0, 0, 0, yPos)
+    toggleFrame.BackgroundTransparency = 1
+    toggleFrame.Parent = mainFrame
+
+    local label = Instance.new("TextLabel")
+    label.Text = name
+    label.Size = UDim2.new(0.65, 0, 1, 0)
+    label.Position = UDim2.new(0, 0, 0, 0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = Color3.fromRGB(220, 220, 220)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 20
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = toggleFrame
+
+    local toggle = Instance.new("TextButton")
+    toggle.Name = "Toggle"
+    toggle.Size = UDim2.new(0, 70, 0, 28)
+    toggle.Position = UDim2.new(1, -80, 0.5, -14)
+    toggle.BackgroundColor3 = Color3.fromRGB(60, 180, 90)
+    toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggle.Font = Enum.Font.GothamBold
+    toggle.TextSize = 18
+    toggle.Text = "ON"
+    toggle.Parent = toggleFrame
+
+    return toggle
+end
+
+-- Create toggles
+local wsToggle = createToggle("WalkSpeed 100", 0)
+local ppToggle = createToggle("Instant ProximityPrompt", 44)
+local ijToggle = createToggle("Infinite Jump", 88)
+local delFoldersToggle = createToggle("Delete Barrier/Build Folders", 132)
+local lockButtonToggle = createToggle("Loop Touch LockButton", 176)
+
+-- Feature state
+local walkSpeedOn = true
+local proxPromptOn = true
+local infJumpOn = true
+local delFoldersOn = true
+local lockButtonLoopOn = true
+
+local function updateToggle(toggle, state)
+    toggle.Text = state and "ON" or "OFF"
+    toggle.BackgroundColor3 = state and Color3.fromRGB(60,180,90) or Color3.fromRGB(180,60,60)
+end
+
+updateToggle(wsToggle, walkSpeedOn)
+updateToggle(ppToggle, proxPromptOn)
+updateToggle(ijToggle, infJumpOn)
+updateToggle(delFoldersToggle, delFoldersOn)
+updateToggle(lockButtonToggle, lockButtonLoopOn)
+
+-- WalkSpeed 100 logic
+local wsLoop
+local function startWalkSpeed()
+    if wsLoop then return end
+    wsLoop = RunService.RenderStepped:Connect(function()
+        local character = player.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                if humanoid.WalkSpeed ~= 100 then
+                    humanoid.WalkSpeed = 100
+                end
+            end
+        end
+    end)
+end
+
+local function stopWalkSpeed()
+    if wsLoop then
+        wsLoop:Disconnect()
+        wsLoop = nil
+    end
+end
+
+wsToggle.MouseButton1Click:Connect(function()
+    walkSpeedOn = not walkSpeedOn
+    updateToggle(wsToggle, walkSpeedOn)
+    if walkSpeedOn then
+        startWalkSpeed()
+    else
+        stopWalkSpeed()
+    end
+end)
+if walkSpeedOn then startWalkSpeed() end
+
+-- Instant ProximityPrompt logic
+local function setPromptInstant(prompt)
+    if prompt:IsA("ProximityPrompt") then
+        prompt.HoldDuration = 0
+    end
+end
+
+local ppConn
+local function startPrompt()
+    for _, obj in ipairs(game:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") then
+            obj.HoldDuration = 0
+        end
+    end
+    if not ppConn then
+        ppConn = game.DescendantAdded:Connect(function(obj)
+            if proxPromptOn then
+                if obj:IsA("ProximityPrompt") then
+                    obj.HoldDuration = 0
+                end
+            end
+        end)
+    end
+end
+
+local function stopPrompt()
+    if ppConn then ppConn:Disconnect() ppConn = nil end
+end
+
+ppToggle.MouseButton1Click:Connect(function()
+    proxPromptOn = not proxPromptOn
+    updateToggle(ppToggle, proxPromptOn)
+    if proxPromptOn then
+        startPrompt()
+    else
+        stopPrompt()
+    end
+end)
+if proxPromptOn then startPrompt() end
+
+-- Infinite Jump logic
+local ijConn
+local function startInfJump()
+    if ijConn then return end
+    ijConn = UserInputService.JumpRequest:Connect(function()
+        if infJumpOn then
+            local character = player.Character
+            if character then
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end
+        end
+    end)
+end
+
+local function stopInfJump()
+    if ijConn then ijConn:Disconnect() ijConn = nil end
+end
+
+ijToggle.MouseButton1Click:Connect(function()
+    infJumpOn = not infJumpOn
+    updateToggle(ijToggle, infJumpOn)
+    if infJumpOn then
+        startInfJump()
+    else
+        stopInfJump()
+    end
+end)
+if infJumpOn then startInfJump() end
+
+-- Delete Barrier/Build Folders logic
+local delFoldersConn
+local function tryDeleteFolder(obj)
+    if obj:IsA("Folder") and (obj.Name == "Barrier" or obj.Name == "Build") then
+        obj:Destroy()
+    end
+end
+
+local function startDeleteFolders()
+    for _, obj in ipairs(game:GetDescendants()) do
+        tryDeleteFolder(obj)
+    end
+    if not delFoldersConn then
+        delFoldersConn = game.DescendantAdded:Connect(function(obj)
+            if delFoldersOn then
+                tryDeleteFolder(obj)
+            end
+        end)
+    end
+end
+
+local function stopDeleteFolders()
+    if delFoldersConn then delFoldersConn:Disconnect() delFoldersConn = nil end
+end
+
+delFoldersToggle.MouseButton1Click:Connect(function()
+    delFoldersOn = not delFoldersOn
+    updateToggle(delFoldersToggle, delFoldersOn)
+    if delFoldersOn then
+        startDeleteFolders()
+    else
+        stopDeleteFolders()
+    end
+end)
+if delFoldersOn then startDeleteFolders() end
+
+-- Loop Touch LockButton logic
+local lockLoop
+local function triggerLockButtons()
+    local character = player.Character
+    if not character then return end
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    for _, part in ipairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name == "LockButton" then
+            for _, ti in ipairs(part:GetChildren()) do
+                if ti:IsA("TouchTransmitter") then
+                    pcall(function()
+                        firetouchinterest(hrp, part, 0)
+                        firetouchinterest(hrp, part, 1)
+                    end)
+                end
+            end
+        end
+    end
+end
+
+local function startLockButtonLoop()
+    if lockLoop then return end
+    lockLoop = RunService.RenderStepped:Connect(function(dt)
+        local now = tick()
+        if not lockLoop._last or now - lockLoop._last > 1 then
+            triggerLockButtons()
+            lockLoop._last = now
+        end
+    end)
+end
+
+local function stopLockButtonLoop()
+    if lockLoop then
+        lockLoop:Disconnect()
+        lockLoop = nil
+    end
+end
+
+lockButtonToggle.MouseButton1Click:Connect(function()
+    lockButtonLoopOn = not lockButtonLoopOn
+    updateToggle(lockButtonToggle, lockButtonLoopOn)
+    if lockButtonLoopOn then
+        startLockButtonLoop()
+    else
+        stopLockButtonLoop()
+    end
+end)
+if lockButtonLoopOn then startLockButtonLoop() end
+
+-- Teleport buttons (TpBase & TpGoon)
+local TpBasePosition = nil
+local TpGoonPosition = nil
+
+local function createTPGroup(yPos, setName, tpName, getPos, setPos)
+    local groupFrame = Instance.new("Frame")
+    groupFrame.Size = UDim2.new(1, -20, 0, 44)
+    groupFrame.Position = UDim2.new(0, 0, 0, yPos)
+    groupFrame.BackgroundTransparency = 1
+    groupFrame.Parent = mainFrame
+
+    local setButton = Instance.new("TextButton")
+    setButton.Size = UDim2.new(0, 120, 0, 34)
+    setButton.Position = UDim2.new(0, 0, 0.5, -17)
+    setButton.Text = "Set "..setName
+    setButton.Font = Enum.Font.GothamBold
+    setButton.TextSize = 18
+    setButton.BackgroundColor3 = Color3.fromRGB(70, 130, 220)
+    setButton.TextColor3 = Color3.new(1,1,1)
+    setButton.Parent = groupFrame
+
+    local tpButton = Instance.new("TextButton")
+    tpButton.Size = UDim2.new(0, 120, 0, 34)
+    tpButton.Position = UDim2.new(0, 130, 0.5, -17)
+    tpButton.Text = "Tp "..tpName
+    tpButton.Font = Enum.Font.GothamBold
+    tpButton.TextSize = 18
+    tpButton.BackgroundColor3 = Color3.fromRGB(50, 180, 100)
+    tpButton.TextColor3 = Color3.new(1,1,1)
+    tpButton.Parent = groupFrame
+
+    setButton.MouseButton1Click:Connect(function()
+        local character = player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            setPos(character.HumanoidRootPart.CFrame)
+            setButton.Text = "Set "..setName.." ✓"
+            wait(0.7)
+            setButton.Text = "Set "..setName
+        end
+    end)
+
+    tpButton.MouseButton1Click:Connect(function()
+        local cf = getPos()
+        local character = player.Character
+        if character and cf and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = cf
+        end
+    end)
+end
+
+-- Add TP groups under toggles
+createTPGroup(222, "Base", "Base", function() return TpBasePosition end, function(cf) TpBasePosition = cf end)
+createTPGroup(272, "Goon", "Goon", function() return TpGoonPosition end, function(cf) TpGoonPosition = cf end)
+
+-- Kill button
+closeButton.MouseButton1Click:Connect(function()
+    stopWalkSpeed()
+    stopPrompt()
+    stopInfJump()
+    stopDeleteFolders()
+    stopLockButtonLoop()
+    screenGui:Destroy()
+end)
