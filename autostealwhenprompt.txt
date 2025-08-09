@@ -1,0 +1,156 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- === GUI SETUP ===
+local playerGui = player:WaitForChild("PlayerGui")
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "StealInfProxTPReturn"
+screenGui.Parent = playerGui
+screenGui.ResetOnSpawn = false
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 320, 0, 110)
+mainFrame.Position = UDim2.new(0.5, -160, 0.5, -55)
+mainFrame.BackgroundColor3 = Color3.fromRGB(33, 33, 50)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local title = Instance.new("TextLabel")
+title.Text = "Steal Proximity TP/Return"
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Parent = mainFrame
+
+local closeButton = Instance.new("TextButton")
+closeButton.Text = "X"
+closeButton.Size = UDim2.new(0, 28, 0, 28)
+closeButton.Position = UDim2.new(1, -32, 0, 2)
+closeButton.BackgroundColor3 = Color3.fromRGB(180, 50, 60)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 18
+closeButton.Parent = mainFrame
+
+local padding = Instance.new("UIPadding")
+padding.PaddingTop = UDim.new(0, 34)
+padding.PaddingLeft = UDim.new(0, 10)
+padding.Parent = mainFrame
+
+local setButton = Instance.new("TextButton")
+setButton.Text = "Set Return Spot"
+setButton.Size = UDim2.new(0, 140, 0, 36)
+setButton.Position = UDim2.new(0, 0, 0, 42)
+setButton.Font = Enum.Font.GothamBold
+setButton.TextSize = 18
+setButton.BackgroundColor3 = Color3.fromRGB(70, 130, 220)
+setButton.TextColor3 = Color3.new(1,1,1)
+setButton.Parent = mainFrame
+
+local returnButton = Instance.new("TextButton")
+returnButton.Text = "Return Now"
+returnButton.Size = UDim2.new(0, 140, 0, 36)
+returnButton.Position = UDim2.new(0, 150, 0, 42)
+returnButton.Font = Enum.Font.GothamBold
+returnButton.TextSize = 18
+returnButton.BackgroundColor3 = Color3.fromRGB(50, 180, 100)
+returnButton.TextColor3 = Color3.new(1,1,1)
+returnButton.Parent = mainFrame
+
+-- === LOGIC ===
+local returnCFrame = nil
+
+setButton.MouseButton1Click:Connect(function()
+    local char = player.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        returnCFrame = hrp.CFrame
+        setButton.Text = "Spot Saved!"
+        task.wait(0.7)
+        setButton.Text = "Set Return Spot"
+    end
+end)
+returnButton.MouseButton1Click:Connect(function()
+    local char = player.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if hrp and returnCFrame then
+        hrp.CFrame = returnCFrame
+    end
+end)
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Prevent recursive trigger loop
+local hooked = {}
+
+local function doTPPrompt(prompt, conn)
+    if conn then conn:Disconnect() end
+    local char = player.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if not hrp then
+        if conn then
+            hooked[prompt] = prompt.Triggered:Connect(function(...)
+                doTPPrompt(prompt, hooked[prompt])
+            end)
+        end
+        return
+    end
+    local oldCFrame = returnCFrame or hrp.CFrame
+
+    -- Teleport to prompt
+    local parent = prompt.Parent
+    if parent and parent:IsA("BasePart") then
+        hrp.CFrame = parent.CFrame + Vector3.new(0, 2, 0)
+    elseif parent and parent:IsA("Model") and parent.PrimaryPart then
+        hrp.CFrame = parent.PrimaryPart.CFrame + Vector3.new(0, 2, 0)
+    end
+
+    task.wait(0.13)
+    pcall(function() fireproximityprompt(prompt) end)
+    task.wait(0.13)
+    if oldCFrame then
+        hrp.CFrame = oldCFrame
+    end
+
+    task.wait(0.22)
+    hooked[prompt] = prompt.Triggered:Connect(function()
+        local text = (prompt.ObjectText or "") .. (prompt.ActionText or "")
+        if string.find(text, "Steal") then
+            doTPPrompt(prompt, hooked[prompt])
+        end
+    end)
+end
+
+local function isStealPrompt(prompt)
+    local text = (prompt.ObjectText or "") .. (prompt.ActionText or "")
+    return string.find(text, "Steal")
+end
+
+local function hookPrompt(prompt)
+    if hooked[prompt] then return end
+    if isStealPrompt(prompt) then
+        prompt.MaxActivationDistance = math.huge
+        prompt.RequiresLineOfSight = false
+        hooked[prompt] = prompt.Triggered:Connect(function()
+            if isStealPrompt(prompt) then
+                doTPPrompt(prompt, hooked[prompt])
+            end
+        end)
+    end
+end
+
+for _, obj in ipairs(game:GetDescendants()) do
+    if obj:IsA("ProximityPrompt") then
+        hookPrompt(obj)
+    end
+end
+game.DescendantAdded:Connect(function(obj)
+    if obj:IsA("ProximityPrompt") then
+        hookPrompt(obj)
+    end
+end)
