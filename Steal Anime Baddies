@@ -1,4 +1,5 @@
 -- SuperRobloxEnhancer: Main GUI and all features, including togglable TouchInterest auto, prompt tests (all steals, all sells, combo mode), and all requested game modifications.
+-- Now includes togglable "Collect TouchInterest Trigger" every 10 seconds for parts named "Collect".
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -15,7 +16,7 @@ screenGui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 430, 0, 0)
-frame.Position = UDim2.new(0.5, -215, 0.8, -210)
+frame.Position = UDim2.new(0.5, -215, 0.8, -220)
 frame.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
 frame.BorderSizePixel = 0
 frame.Active = true
@@ -97,7 +98,6 @@ contentFrame.Parent = frame
 local contentCorner = Instance.new("UICorner", contentFrame)
 contentCorner.CornerRadius = UDim.new(0, 0)
 
--- Status rows layout
 local UIListLayout = Instance.new("UIListLayout")
 UIListLayout.Parent = contentFrame
 UIListLayout.Padding = UDim.new(0, 8)
@@ -189,11 +189,43 @@ toggleBtnTI.BorderSizePixel = 0
 local toggleUICornerTI = Instance.new("UICorner", toggleBtnTI)
 toggleUICornerTI.CornerRadius = UDim.new(1,0)
 
+-- Collect TouchInterest Trigger toggle (NEW)
+local collectRow = Instance.new("Frame")
+collectRow.Size = UDim2.new(1, -32, 0, 32)
+collectRow.BackgroundTransparency = 1
+collectRow.LayoutOrder = 10
+collectRow.Parent = contentFrame
+
+local statusCollect = Instance.new("TextLabel")
+statusCollect.Text = "Collect TouchInterest Trigger: "
+statusCollect.Size = UDim2.new(1, -70, 1, 0)
+statusCollect.Position = UDim2.new(0, 0, 0, 0)
+statusCollect.BackgroundTransparency = 1
+statusCollect.Font = Enum.Font.Gotham
+statusCollect.TextSize = 18
+statusCollect.TextColor3 = Color3.fromRGB(210, 210, 210)
+statusCollect.TextXAlignment = Enum.TextXAlignment.Left
+statusCollect.Parent = collectRow
+
+local toggleBtnCollect = Instance.new("TextButton")
+toggleBtnCollect.Text = "ON"
+toggleBtnCollect.Size = UDim2.new(0, 50, 1, -4)
+toggleBtnCollect.Position = UDim2.new(1, -54, 0, 2)
+toggleBtnCollect.AnchorPoint = Vector2.new(1,0)
+toggleBtnCollect.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
+toggleBtnCollect.TextColor3 = Color3.fromRGB(255,255,255)
+toggleBtnCollect.Font = Enum.Font.GothamBold
+toggleBtnCollect.TextSize = 16
+toggleBtnCollect.Parent = collectRow
+toggleBtnCollect.BorderSizePixel = 0
+local toggleUICornerCollect = Instance.new("UICorner", toggleBtnCollect)
+toggleUICornerCollect.CornerRadius = UDim.new(1,0)
+
 -- Prompt Test control row (all Steals / all Sells / Combo)
 local promptTestRow = Instance.new("Frame")
 promptTestRow.Size = UDim2.new(1, -32, 0, 38)
 promptTestRow.BackgroundTransparency = 1
-promptTestRow.LayoutOrder = 10
+promptTestRow.LayoutOrder = 11
 promptTestRow.Parent = contentFrame
 
 local startStealBtn = Instance.new("TextButton")
@@ -233,10 +265,10 @@ local btnCornerCombo = Instance.new("UICorner", startComboBtn)
 btnCornerCombo.CornerRadius = UDim.new(1, 0)
 
 -- Status for prompt cycling
-local statusPromptCycle = statusRow("Prompt Test: OFF", 11)
+local statusPromptCycle = statusRow("Prompt Test: OFF", 12)
 
 -- === ANIMATION AND MINIMIZE ===
-local openSize = UDim2.new(0, 430, 0, 520)
+local openSize = UDim2.new(0, 430, 0, 552)
 local minSize = UDim2.new(0, 430, 0, 62)
 local minimized = false
 local lastPos = frame.Position
@@ -612,6 +644,43 @@ task.spawn(function()
             end
         end
         task.wait(1)
+    end
+end)
+
+-- === NEW: TouchInterest trigger for "Collect" parts, togglable, every 10 seconds ===
+local collectAutoTrigger = true
+local function setToggleCollect(state)
+    if state then
+        toggleBtnCollect.Text = "ON"
+        toggleBtnCollect.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
+        statusCollect.Text = "Collect TouchInterest Trigger: ON"
+        statusCollect.TextColor3 = Color3.fromRGB(180,255,180)
+    else
+        toggleBtnCollect.Text = "OFF"
+        toggleBtnCollect.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+        statusCollect.Text = "Collect TouchInterest Trigger: OFF"
+        statusCollect.TextColor3 = Color3.fromRGB(255,180,180)
+    end
+end
+
+setToggleCollect(true)
+
+toggleBtnCollect.MouseButton1Click:Connect(function()
+    collectAutoTrigger = not collectAutoTrigger
+    setToggleCollect(collectAutoTrigger)
+end)
+
+task.spawn(function()
+    while true do
+        if collectAutoTrigger then
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("BasePart") and obj.Name == "Collect" then
+                    ensureTouchInterest(obj)
+                    fireTouch(obj)
+                end
+            end
+        end
+        task.wait(10)
     end
 end)
 
