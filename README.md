@@ -1,2 +1,0 @@
-# kpopcoolness
-very cool script
