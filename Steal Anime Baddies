@@ -1,6 +1,3 @@
--- SuperRobloxEnhancer: Main GUI and all features, including togglable TouchInterest auto, prompt tests (all steals, all sells, combo mode), and all requested game modifications.
--- Now includes togglable "Collect TouchInterest Trigger" every 10 seconds for parts named "Collect".
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -15,9 +12,9 @@ screenGui.Parent = playerGui
 screenGui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 430, 0, 0)
-frame.Position = UDim2.new(0.5, -215, 0.8, -220)
-frame.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+frame.Size = UDim2.new(0, 420, 0, 0)
+frame.Position = UDim2.new(0.5, -210, 0.8, -210)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
@@ -25,7 +22,7 @@ frame.ClipsDescendants = true
 frame.Parent = screenGui
 
 local uicorner = Instance.new("UICorner", frame)
-uicorner.CornerRadius = UDim.new(0, 18)
+uicorner.CornerRadius = UDim.new(0, 14)
 
 local shadow = Instance.new("ImageLabel")
 shadow.Name = "Shadow"
@@ -34,40 +31,40 @@ shadow.Image = "rbxassetid://1316045217"
 shadow.Size = UDim2.new(1, 24, 1, 24)
 shadow.Position = UDim2.new(-0.03, 0, -0.03, 0)
 shadow.ImageColor3 = Color3.fromRGB(0,0,0)
-shadow.ImageTransparency = 0.7
+shadow.ImageTransparency = 0.78
 shadow.ZIndex = 0
 shadow.Parent = frame
 
 local headerBar = Instance.new("Frame")
-headerBar.Size = UDim2.new(1, 0, 0, 46)
-headerBar.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+headerBar.Size = UDim2.new(1, 0, 0, 44)
+headerBar.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
 headerBar.BorderSizePixel = 0
 headerBar.Parent = frame
 headerBar.ZIndex = 2
 local headerBarCorner = Instance.new("UICorner", headerBar)
-headerBarCorner.CornerRadius = UDim.new(0, 18)
+headerBarCorner.CornerRadius = UDim.new(0, 14)
 
 local header = Instance.new("TextLabel")
-header.Text = "✨ Super Roblox Enhancer"
-header.Size = UDim2.new(1, -100, 1, 0)
+header.Text = "Project Nova"
+header.Size = UDim2.new(1, -80, 1, 0)
 header.Position = UDim2.new(0, 16, 0, 0)
 header.BackgroundTransparency = 1
 header.Font = Enum.Font.GothamBlack
-header.TextSize = 24
-header.TextStrokeTransparency = 0.7
-header.TextColor3 = Color3.fromRGB(235,235,235)
+header.TextSize = 21
+header.TextStrokeTransparency = 0.8
+header.TextColor3 = Color3.fromRGB(225,225,225)
 header.TextXAlignment = Enum.TextXAlignment.Left
 header.ZIndex = 3
 header.Parent = headerBar
 
 local closeButton = Instance.new("TextButton")
-closeButton.Text = "✕"
+closeButton.Text = "X"
 closeButton.Size = UDim2.new(0, 36, 0, 36)
-closeButton.Position = UDim2.new(1, -44, 0.5, -18)
-closeButton.BackgroundColor3 = Color3.fromRGB(220, 55, 66)
+closeButton.Position = UDim2.new(1, -42, 0.5, -18)
+closeButton.BackgroundColor3 = Color3.fromRGB(180, 50, 60)
 closeButton.TextColor3 = Color3.fromRGB(255,255,255)
 closeButton.Font = Enum.Font.GothamBold
-closeButton.TextSize = 22
+closeButton.TextSize = 18
 closeButton.ZIndex = 4
 closeButton.BorderSizePixel = 0
 closeButton.Parent = headerBar
@@ -75,13 +72,13 @@ local closeUICorner = Instance.new("UICorner", closeButton)
 closeUICorner.CornerRadius = UDim.new(1,0)
 
 local minimizeButton = Instance.new("TextButton")
-minimizeButton.Text = "_"
-minimizeButton.Size = UDim2.new(0, 34, 0, 34)
-minimizeButton.Position = UDim2.new(1, -86, 0.5, -17)
-minimizeButton.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
-minimizeButton.TextColor3 = Color3.fromRGB(210,210,210)
+minimizeButton.Text = "-"
+minimizeButton.Size = UDim2.new(0, 32, 0, 32)
+minimizeButton.Position = UDim2.new(1, -80, 0.5, -16)
+minimizeButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+minimizeButton.TextColor3 = Color3.fromRGB(195,195,195)
 minimizeButton.Font = Enum.Font.GothamBold
-minimizeButton.TextSize = 30
+minimizeButton.TextSize = 22
 minimizeButton.ZIndex = 4
 minimizeButton.BorderSizePixel = 0
 minimizeButton.Parent = headerBar
@@ -90,9 +87,9 @@ minUICorner.CornerRadius = UDim.new(1,0)
 
 local contentFrame = Instance.new("Frame")
 contentFrame.Name = "Content"
-contentFrame.Size = UDim2.new(1, 0, 1, -46)
-contentFrame.Position = UDim2.new(0, 0, 0, 46)
-contentFrame.BackgroundColor3 = Color3.fromRGB(27,27,27)
+contentFrame.Size = UDim2.new(1, 0, 1, -44)
+contentFrame.Position = UDim2.new(0, 0, 0, 44)
+contentFrame.BackgroundColor3 = Color3.fromRGB(25,25,25)
 contentFrame.BorderSizePixel = 0
 contentFrame.Parent = frame
 local contentCorner = Instance.new("UICorner", contentFrame)
@@ -100,58 +97,58 @@ contentCorner.CornerRadius = UDim.new(0, 0)
 
 local UIListLayout = Instance.new("UIListLayout")
 UIListLayout.Parent = contentFrame
-UIListLayout.Padding = UDim.new(0, 8)
+UIListLayout.Padding = UDim.new(0, 7)
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 local function statusRow(text, idx)
     local label = Instance.new("TextLabel")
     label.Text = text
-    label.Size = UDim2.new(1, -32, 0, 32)
+    label.Size = UDim2.new(1, -30, 0, 27)
     label.BackgroundTransparency = 1
     label.Font = Enum.Font.Gotham
-    label.TextSize = 18
-    label.TextColor3 = Color3.fromRGB(210, 210, 210)
+    label.TextSize = 16
+    label.TextColor3 = Color3.fromRGB(205, 205, 205)
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.LayoutOrder = idx
     label.Parent = contentFrame
     return label
 end
 
-local status1 = statusRow("RobberyDeposit: Size 2048³ (auto)", 1)
-local status2 = statusRow('Deleted all folders named "Barrier"', 2)
-local status3 = statusRow('Deleted all parts named "Wall"', 3)
-local status4 = statusRow('Deleted all folders named "PaidPads"', 4)
-local status5 = statusRow("Speed: 100 (auto)", 5)
-local status6 = statusRow("Infinite Jump: Enabled", 6)
-local status7 = statusRow('Steal/Sell Prompts: Infinite, Instant, Loop', 7)
+local status1 = statusRow("RobberyDeposit: Auto size 2048³", 1)
+local status2 = statusRow('Folders deleted: Barrier', 2)
+local status3 = statusRow('Parts deleted: Wall', 3)
+local status4 = statusRow('Folders deleted: PaidPads', 4)
+local status5 = statusRow("WalkSpeed: 100 (auto)", 5)
+local status6 = statusRow("Infinite Jump: Active", 6)
+local status7 = statusRow('Prompt Exploit: Enhanced', 7)
 
 -- Prompt TP+Activate toggle
 local toggleRow = Instance.new("Frame")
-toggleRow.Size = UDim2.new(1, -32, 0, 32)
+toggleRow.Size = UDim2.new(1, -30, 0, 27)
 toggleRow.BackgroundTransparency = 1
 toggleRow.LayoutOrder = 8
 toggleRow.Parent = contentFrame
 
 local statusTP = Instance.new("TextLabel")
-statusTP.Text = "Prompt TP+Activate: "
-statusTP.Size = UDim2.new(1, -70, 1, 0)
+statusTP.Text = "Prompt TP+Activate"
+statusTP.Size = UDim2.new(1, -64, 1, 0)
 statusTP.Position = UDim2.new(0, 0, 0, 0)
 statusTP.BackgroundTransparency = 1
 statusTP.Font = Enum.Font.Gotham
-statusTP.TextSize = 18
-statusTP.TextColor3 = Color3.fromRGB(210, 210, 210)
+statusTP.TextSize = 16
+statusTP.TextColor3 = Color3.fromRGB(205, 205, 205)
 statusTP.TextXAlignment = Enum.TextXAlignment.Left
 statusTP.Parent = toggleRow
 
 local toggleBtnTP = Instance.new("TextButton")
 toggleBtnTP.Text = "ON"
-toggleBtnTP.Size = UDim2.new(0, 50, 1, -4)
-toggleBtnTP.Position = UDim2.new(1, -54, 0, 2)
+toggleBtnTP.Size = UDim2.new(0, 48, 1, -4)
+toggleBtnTP.Position = UDim2.new(1, -52, 0, 2)
 toggleBtnTP.AnchorPoint = Vector2.new(1,0)
-toggleBtnTP.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
+toggleBtnTP.BackgroundColor3 = Color3.fromRGB(40, 180, 110)
 toggleBtnTP.TextColor3 = Color3.fromRGB(255,255,255)
 toggleBtnTP.Font = Enum.Font.GothamBold
-toggleBtnTP.TextSize = 16
+toggleBtnTP.TextSize = 15
 toggleBtnTP.Parent = toggleRow
 toggleBtnTP.BorderSizePixel = 0
 local toggleUICornerTP = Instance.new("UICorner", toggleBtnTP)
@@ -159,63 +156,63 @@ toggleUICornerTP.CornerRadius = UDim.new(1,0)
 
 -- TouchInterest Auto Trigger toggle
 local tiRow = Instance.new("Frame")
-tiRow.Size = UDim2.new(1, -32, 0, 32)
+tiRow.Size = UDim2.new(1, -30, 0, 27)
 tiRow.BackgroundTransparency = 1
 tiRow.LayoutOrder = 9
 tiRow.Parent = contentFrame
 
 local statusTI = Instance.new("TextLabel")
-statusTI.Text = "TouchInterest Auto Trigger: "
-statusTI.Size = UDim2.new(1, -70, 1, 0)
+statusTI.Text = "TouchInterest: LockButton"
+statusTI.Size = UDim2.new(1, -64, 1, 0)
 statusTI.Position = UDim2.new(0, 0, 0, 0)
 statusTI.BackgroundTransparency = 1
 statusTI.Font = Enum.Font.Gotham
-statusTI.TextSize = 18
-statusTI.TextColor3 = Color3.fromRGB(210, 210, 210)
+statusTI.TextSize = 16
+statusTI.TextColor3 = Color3.fromRGB(205, 205, 205)
 statusTI.TextXAlignment = Enum.TextXAlignment.Left
 statusTI.Parent = tiRow
 
 local toggleBtnTI = Instance.new("TextButton")
 toggleBtnTI.Text = "ON"
-toggleBtnTI.Size = UDim2.new(0, 50, 1, -4)
-toggleBtnTI.Position = UDim2.new(1, -54, 0, 2)
+toggleBtnTI.Size = UDim2.new(0, 48, 1, -4)
+toggleBtnTI.Position = UDim2.new(1, -52, 0, 2)
 toggleBtnTI.AnchorPoint = Vector2.new(1,0)
-toggleBtnTI.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
+toggleBtnTI.BackgroundColor3 = Color3.fromRGB(40, 180, 110)
 toggleBtnTI.TextColor3 = Color3.fromRGB(255,255,255)
 toggleBtnTI.Font = Enum.Font.GothamBold
-toggleBtnTI.TextSize = 16
+toggleBtnTI.TextSize = 15
 toggleBtnTI.Parent = tiRow
 toggleBtnTI.BorderSizePixel = 0
 local toggleUICornerTI = Instance.new("UICorner", toggleBtnTI)
 toggleUICornerTI.CornerRadius = UDim.new(1,0)
 
--- Collect TouchInterest Trigger toggle (NEW)
+-- Collect TouchInterest Trigger toggle
 local collectRow = Instance.new("Frame")
-collectRow.Size = UDim2.new(1, -32, 0, 32)
+collectRow.Size = UDim2.new(1, -30, 0, 27)
 collectRow.BackgroundTransparency = 1
 collectRow.LayoutOrder = 10
 collectRow.Parent = contentFrame
 
 local statusCollect = Instance.new("TextLabel")
-statusCollect.Text = "Collect TouchInterest Trigger: "
-statusCollect.Size = UDim2.new(1, -70, 1, 0)
+statusCollect.Text = "TouchInterest: Collect"
+statusCollect.Size = UDim2.new(1, -64, 1, 0)
 statusCollect.Position = UDim2.new(0, 0, 0, 0)
 statusCollect.BackgroundTransparency = 1
 statusCollect.Font = Enum.Font.Gotham
-statusCollect.TextSize = 18
-statusCollect.TextColor3 = Color3.fromRGB(210, 210, 210)
+statusCollect.TextSize = 16
+statusCollect.TextColor3 = Color3.fromRGB(205, 205, 205)
 statusCollect.TextXAlignment = Enum.TextXAlignment.Left
 statusCollect.Parent = collectRow
 
 local toggleBtnCollect = Instance.new("TextButton")
 toggleBtnCollect.Text = "ON"
-toggleBtnCollect.Size = UDim2.new(0, 50, 1, -4)
-toggleBtnCollect.Position = UDim2.new(1, -54, 0, 2)
+toggleBtnCollect.Size = UDim2.new(0, 48, 1, -4)
+toggleBtnCollect.Position = UDim2.new(1, -52, 0, 2)
 toggleBtnCollect.AnchorPoint = Vector2.new(1,0)
-toggleBtnCollect.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
+toggleBtnCollect.BackgroundColor3 = Color3.fromRGB(40, 180, 110)
 toggleBtnCollect.TextColor3 = Color3.fromRGB(255,255,255)
 toggleBtnCollect.Font = Enum.Font.GothamBold
-toggleBtnCollect.TextSize = 16
+toggleBtnCollect.TextSize = 15
 toggleBtnCollect.Parent = collectRow
 toggleBtnCollect.BorderSizePixel = 0
 local toggleUICornerCollect = Instance.new("UICorner", toggleBtnCollect)
@@ -223,53 +220,52 @@ toggleUICornerCollect.CornerRadius = UDim.new(1,0)
 
 -- Prompt Test control row (all Steals / all Sells / Combo)
 local promptTestRow = Instance.new("Frame")
-promptTestRow.Size = UDim2.new(1, -32, 0, 38)
+promptTestRow.Size = UDim2.new(1, -30, 0, 33)
 promptTestRow.BackgroundTransparency = 1
 promptTestRow.LayoutOrder = 11
 promptTestRow.Parent = contentFrame
 
 local startStealBtn = Instance.new("TextButton")
-startStealBtn.Text = "START STEALS"
-startStealBtn.Size = UDim2.new(0.31, -6, 1, -2)
+startStealBtn.Text = "Steal Exploit"
+startStealBtn.Size = UDim2.new(0.31, -4, 1, -2)
 startStealBtn.Position = UDim2.new(0, 2, 0, 1)
-startStealBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+startStealBtn.BackgroundColor3 = Color3.fromRGB(30, 140, 210)
 startStealBtn.TextColor3 = Color3.new(1,1,1)
 startStealBtn.Font = Enum.Font.GothamBold
-startStealBtn.TextSize = 16
+startStealBtn.TextSize = 15
 startStealBtn.Parent = promptTestRow
 local btnCorner1 = Instance.new("UICorner", startStealBtn)
 btnCorner1.CornerRadius = UDim.new(1, 0)
 
 local startSellBtn = Instance.new("TextButton")
-startSellBtn.Text = "START SELLS"
-startSellBtn.Size = UDim2.new(0.31, -6, 1, -2)
+startSellBtn.Text = "Sell Exploit"
+startSellBtn.Size = UDim2.new(0.31, -4, 1, -2)
 startSellBtn.Position = UDim2.new(0.34, 2, 0, 1)
-startSellBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 40)
+startSellBtn.BackgroundColor3 = Color3.fromRGB(200, 160, 40)
 startSellBtn.TextColor3 = Color3.new(1,1,1)
 startSellBtn.Font = Enum.Font.GothamBold
-startSellBtn.TextSize = 16
+startSellBtn.TextSize = 15
 startSellBtn.Parent = promptTestRow
 local btnCorner2 = Instance.new("UICorner", startSellBtn)
 btnCorner2.CornerRadius = UDim.new(1, 0)
 
 local startComboBtn = Instance.new("TextButton")
-startComboBtn.Text = "START COMBO"
-startComboBtn.Size = UDim2.new(0.31, -6, 1, -2)
+startComboBtn.Text = "Combo Exploit"
+startComboBtn.Size = UDim2.new(0.31, -4, 1, -2)
 startComboBtn.Position = UDim2.new(0.68, 2, 0, 1)
-startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 80, 255)
+startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 90, 220)
 startComboBtn.TextColor3 = Color3.new(1, 1, 1)
 startComboBtn.Font = Enum.Font.GothamBold
-startComboBtn.TextSize = 16
+startComboBtn.TextSize = 15
 startComboBtn.Parent = promptTestRow
 local btnCornerCombo = Instance.new("UICorner", startComboBtn)
 btnCornerCombo.CornerRadius = UDim.new(1, 0)
 
--- Status for prompt cycling
-local statusPromptCycle = statusRow("Prompt Test: OFF", 12)
+local statusPromptCycle = statusRow("Prompt Exploit: Idle", 12)
 
 -- === ANIMATION AND MINIMIZE ===
-local openSize = UDim2.new(0, 430, 0, 552)
-local minSize = UDim2.new(0, 430, 0, 62)
+local openSize = UDim2.new(0, 420, 0, 530)
+local minSize = UDim2.new(0, 420, 0, 60)
 local minimized = false
 local lastPos = frame.Position
 
@@ -283,14 +279,14 @@ local function setMinimized(state)
     minimized = state
     if state then
         lastPos = frame.Position
-        tween(frame, {t=0.22}, {Size = minSize})
+        tween(frame, {t=0.21}, {Size = minSize})
         contentFrame.Visible = false
         minimizeButton.Text = "+"
     else
         frame.Position = lastPos
-        tween(frame, {t=0.22}, {Size = openSize})
-        task.delay(0.18, function() contentFrame.Visible = true end)
-        minimizeButton.Text = "_"
+        tween(frame, {t=0.21}, {Size = openSize})
+        task.delay(0.17, function() contentFrame.Visible = true end)
+        minimizeButton.Text = "-"
     end
 end
 
@@ -299,25 +295,21 @@ minimizeButton.MouseButton1Click:Connect(function()
 end)
 
 local function openAnim()
-    frame.Size = UDim2.new(0, 430, 0, 0)
+    frame.Size = UDim2.new(0, 420, 0, 0)
     contentFrame.Visible = false
-    local t = tween(frame, {t=0.32}, {Size=openSize})
-    task.delay(0.24, function() contentFrame.Visible = true end)
+    tween(frame, {t=0.3}, {Size=openSize})
+    task.delay(0.23, function() contentFrame.Visible = true end)
 end
 
 local function closeAnimAndDestroy()
     contentFrame.Visible = false
-    local t = tween(frame, {t=0.23}, {Size=UDim2.new(0, 430, 0, 0)})
-    t.Completed:Wait()
+    tween(frame, {t=0.21}, {Size=UDim2.new(0, 420, 0, 0)}).Completed:Wait()
     screenGui:Destroy()
 end
 
 closeButton.MouseButton1Click:Connect(closeAnimAndDestroy)
 
--- Make frame not snap to initial pos after minimize/maximize (keep lastPos)
-local dragging = false
-local dragInput, dragStart, startPos
-
+local dragging, dragInput, dragStart, startPos
 headerBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
@@ -331,13 +323,11 @@ headerBar.InputBegan:Connect(function(input)
         end)
     end
 end)
-
 headerBar.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement then
         dragInput = input
     end
 end)
-
 UIS.InputChanged:Connect(function(input)
     if input == dragInput and dragging then
         local delta = input.Position - dragStart
@@ -348,7 +338,7 @@ end)
 
 openAnim()
 
--- === FUNCTIONALITY ===
+-- === MAIN FUNCTIONALITY ===
 
 local targetSize = Vector3.new(2048, 2048, 2048)
 local function resizeRobberyDeposit(part)
@@ -388,19 +378,11 @@ local function delBarrier(obj)
     end
 end
 
-for _, obj in ipairs(workspace:GetDescendants()) do
-    delBarrier(obj)
-end
-
-workspace.DescendantAdded:Connect(function(obj)
-    delBarrier(obj)
-end)
-
+for _, obj in ipairs(workspace:GetDescendants()) do delBarrier(obj) end
+workspace.DescendantAdded:Connect(delBarrier)
 task.spawn(function()
     while true do
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            delBarrier(obj)
-        end
+        for _, obj in ipairs(workspace:GetDescendants()) do delBarrier(obj) end
         task.wait(2)
     end
 end)
@@ -411,19 +393,11 @@ local function delWall(obj)
     end
 end
 
-for _, obj in ipairs(workspace:GetDescendants()) do
-    delWall(obj)
-end
-
-workspace.DescendantAdded:Connect(function(obj)
-    delWall(obj)
-end)
-
+for _, obj in ipairs(workspace:GetDescendants()) do delWall(obj) end
+workspace.DescendantAdded:Connect(delWall)
 task.spawn(function()
     while true do
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            delWall(obj)
-        end
+        for _, obj in ipairs(workspace:GetDescendants()) do delWall(obj) end
         task.wait(2)
     end
 end)
@@ -434,19 +408,11 @@ local function delPaidPads(obj)
     end
 end
 
-for _, obj in ipairs(workspace:GetDescendants()) do
-    delPaidPads(obj)
-end
-
-workspace.DescendantAdded:Connect(function(obj)
-    delPaidPads(obj)
-end)
-
+for _, obj in ipairs(workspace:GetDescendants()) do delPaidPads(obj) end
+workspace.DescendantAdded:Connect(delPaidPads)
 task.spawn(function()
     while true do
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            delPaidPads(obj)
-        end
+        for _, obj in ipairs(workspace:GetDescendants()) do delPaidPads(obj) end
         task.wait(2)
     end
 end)
@@ -527,23 +493,18 @@ task.spawn(function()
 end)
 
 local autoPromptTP = true
-
 local function setToggleTP(state)
     if state then
         toggleBtnTP.Text = "ON"
-        toggleBtnTP.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
-        statusTP.Text = "Prompt TP+Activate: ON"
-        statusTP.TextColor3 = Color3.fromRGB(180,255,180)
+        toggleBtnTP.BackgroundColor3 = Color3.fromRGB(40, 180, 110)
+        statusTP.TextColor3 = Color3.fromRGB(140,255,140)
     else
         toggleBtnTP.Text = "OFF"
-        toggleBtnTP.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-        statusTP.Text = "Prompt TP+Activate: OFF"
-        statusTP.TextColor3 = Color3.fromRGB(255,180,180)
+        toggleBtnTP.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
+        statusTP.TextColor3 = Color3.fromRGB(255,140,140)
     end
 end
-
 setToggleTP(true)
-
 toggleBtnTP.MouseButton1Click:Connect(function()
     autoPromptTP = not autoPromptTP
     setToggleTP(autoPromptTP)
@@ -592,23 +553,18 @@ ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
 end)
 
 local tiAutoTrigger = true
-
 local function setToggleTI(state)
     if state then
         toggleBtnTI.Text = "ON"
-        toggleBtnTI.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
-        statusTI.Text = "TouchInterest Auto Trigger: ON"
-        statusTI.TextColor3 = Color3.fromRGB(180,255,180)
+        toggleBtnTI.BackgroundColor3 = Color3.fromRGB(40, 180, 110)
+        statusTI.TextColor3 = Color3.fromRGB(140,255,140)
     else
         toggleBtnTI.Text = "OFF"
-        toggleBtnTI.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-        statusTI.Text = "TouchInterest Auto Trigger: OFF"
-        statusTI.TextColor3 = Color3.fromRGB(255,180,180)
+        toggleBtnTI.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
+        statusTI.TextColor3 = Color3.fromRGB(255,140,140)
     end
 end
-
 setToggleTI(true)
-
 toggleBtnTI.MouseButton1Click:Connect(function()
     tiAutoTrigger = not tiAutoTrigger
     setToggleTI(tiAutoTrigger)
@@ -647,29 +603,24 @@ task.spawn(function()
     end
 end)
 
--- === NEW: TouchInterest trigger for "Collect" parts, togglable, every 10 seconds ===
+-- TouchInterest trigger for "Collect" parts, togglable, every 10 seconds
 local collectAutoTrigger = true
 local function setToggleCollect(state)
     if state then
         toggleBtnCollect.Text = "ON"
-        toggleBtnCollect.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
-        statusCollect.Text = "Collect TouchInterest Trigger: ON"
-        statusCollect.TextColor3 = Color3.fromRGB(180,255,180)
+        toggleBtnCollect.BackgroundColor3 = Color3.fromRGB(40, 180, 110)
+        statusCollect.TextColor3 = Color3.fromRGB(140,255,140)
     else
         toggleBtnCollect.Text = "OFF"
-        toggleBtnCollect.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-        statusCollect.Text = "Collect TouchInterest Trigger: OFF"
-        statusCollect.TextColor3 = Color3.fromRGB(255,180,180)
+        toggleBtnCollect.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
+        statusCollect.TextColor3 = Color3.fromRGB(255,140,140)
     end
 end
-
 setToggleCollect(true)
-
 toggleBtnCollect.MouseButton1Click:Connect(function()
     collectAutoTrigger = not collectAutoTrigger
     setToggleCollect(collectAutoTrigger)
 end)
-
 task.spawn(function()
     while true do
         if collectAutoTrigger then
@@ -727,135 +678,124 @@ local function startStealCycle()
     runningSteal = true
     runningSell = false
     runningCombo = false
-    setPromptCycleStatus("Prompt Test: Steals RUNNING", Color3.fromRGB(60,220,255))
-    startStealBtn.Text = "STOP STEALS"
-    startStealBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 220)
-    startSellBtn.Text = "START SELLS"
-    startSellBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 40)
-    startComboBtn.Text = "START COMBO"
-    startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 80, 255)
+    setPromptCycleStatus("Steal Exploit: Running", Color3.fromRGB(80,180,255))
+    startStealBtn.Text = "Stop Steal"
+    startStealBtn.BackgroundColor3 = Color3.fromRGB(190, 60, 120)
+    startSellBtn.Text = "Sell Exploit"
+    startSellBtn.BackgroundColor3 = Color3.fromRGB(200, 160, 40)
+    startComboBtn.Text = "Combo Exploit"
+    startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 90, 220)
     stealThread = task.spawn(function()
         while runningSteal do
             local stealList = getPrompts("steal")
             if #stealList == 0 then
-                setPromptCycleStatus("Prompt Test: No Steal Prompts", Color3.fromRGB(255,160,90))
+                setPromptCycleStatus("Steal Exploit: No prompts", Color3.fromRGB(255,160,90))
                 wait(2)
                 continue
             end
             for idx, prompt in ipairs(stealList) do
                 if not runningSteal then break end
                 if prompt and prompt.Parent then
-                    setPromptCycleStatus("Prompt Test: Steal "..idx.."/"..#stealList, Color3.fromRGB(60,220,255))
+                    setPromptCycleStatus("Steal "..idx.."/"..#stealList, Color3.fromRGB(80,180,255))
                     tpAndFire(prompt)
                     wait(0.22)
                 end
             end
         end
-        setPromptCycleStatus("Prompt Test: OFF", Color3.fromRGB(180,180,180))
-        startStealBtn.Text = "START STEALS"
-        startStealBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+        setPromptCycleStatus("Prompt Exploit: Idle", Color3.fromRGB(205,205,205))
+        startStealBtn.Text = "Steal Exploit"
+        startStealBtn.BackgroundColor3 = Color3.fromRGB(30, 140, 210)
     end)
 end
-
-local function stopStealCycle()
-    runningSteal = false
-end
+local function stopStealCycle() runningSteal = false end
 
 local function startSellCycle()
     if runningSell then return end
     runningSteal = false
     runningSell = true
     runningCombo = false
-    setPromptCycleStatus("Prompt Test: Sells RUNNING", Color3.fromRGB(255,220,60))
-    startSellBtn.Text = "STOP SELLS"
-    startSellBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
-    startStealBtn.Text = "START STEALS"
-    startStealBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
-    startComboBtn.Text = "START COMBO"
-    startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 80, 255)
+    setPromptCycleStatus("Sell Exploit: Running", Color3.fromRGB(230,200,80))
+    startSellBtn.Text = "Stop Sell"
+    startSellBtn.BackgroundColor3 = Color3.fromRGB(190, 60, 120)
+    startStealBtn.Text = "Steal Exploit"
+    startStealBtn.BackgroundColor3 = Color3.fromRGB(30, 140, 210)
+    startComboBtn.Text = "Combo Exploit"
+    startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 90, 220)
     sellThread = task.spawn(function()
         while runningSell do
             local sellList = getPrompts("sell")
             if #sellList == 0 then
-                setPromptCycleStatus("Prompt Test: No Sell Prompts", Color3.fromRGB(255,160,90))
+                setPromptCycleStatus("Sell Exploit: No prompts", Color3.fromRGB(255,160,90))
                 wait(2)
                 continue
             end
             for idx, prompt in ipairs(sellList) do
                 if not runningSell then break end
                 if prompt and prompt.Parent then
-                    setPromptCycleStatus("Prompt Test: Sell "..idx.."/"..#sellList, Color3.fromRGB(255,220,60))
+                    setPromptCycleStatus("Sell "..idx.."/"..#sellList, Color3.fromRGB(230,200,80))
                     tpAndFire(prompt)
                     wait(0.22)
                 end
             end
         end
-        setPromptCycleStatus("Prompt Test: OFF", Color3.fromRGB(180,180,180))
-        startSellBtn.Text = "START SELLS"
-        startSellBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 40)
+        setPromptCycleStatus("Prompt Exploit: Idle", Color3.fromRGB(205,205,205))
+        startSellBtn.Text = "Sell Exploit"
+        startSellBtn.BackgroundColor3 = Color3.fromRGB(200, 160, 40)
     end)
 end
-
-local function stopSellCycle()
-    runningSell = false
-end
+local function stopSellCycle() runningSell = false end
 
 local function startComboCycle()
     if runningCombo then return end
     runningSteal = false
     runningSell = false
     runningCombo = true
-    setPromptCycleStatus("Prompt Test: Combo RUNNING", Color3.fromRGB(140, 120, 255))
-    startComboBtn.Text = "STOP COMBO"
-    startComboBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 220)
-    startStealBtn.Text = "START STEALS"
-    startStealBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
-    startSellBtn.Text = "START SELLS"
-    startSellBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 40)
+    setPromptCycleStatus("Combo Exploit: Running", Color3.fromRGB(170,120,255))
+    startComboBtn.Text = "Stop Combo"
+    startComboBtn.BackgroundColor3 = Color3.fromRGB(190, 60, 120)
+    startStealBtn.Text = "Steal Exploit"
+    startStealBtn.BackgroundColor3 = Color3.fromRGB(30, 140, 210)
+    startSellBtn.Text = "Sell Exploit"
+    startSellBtn.BackgroundColor3 = Color3.fromRGB(200, 160, 40)
     comboThread = task.spawn(function()
         local stealIndex = 1
         while runningCombo do
             local stealList = getPrompts("steal")
             local sellList = getPrompts("sell")
-            -- 1. TP to next Steal
             if #stealList > 0 then
                 local stealPrompt = stealList[(stealIndex - 1) % #stealList + 1]
                 if stealPrompt and stealPrompt.Parent then
-                    setPromptCycleStatus("Prompt Test: Combo Steal ["..stealIndex.."/"..#stealList.."]", Color3.fromRGB(60,220,255))
+                    setPromptCycleStatus("Combo Steal ["..stealIndex.."/"..#stealList.."]", Color3.fromRGB(80,180,255))
                     tpAndFire(stealPrompt)
                     stealIndex = stealIndex + 1
                     wait(0.24)
                 end
             else
-                setPromptCycleStatus("Prompt Test: No Steal Prompts", Color3.fromRGB(255,160,90))
+                setPromptCycleStatus("Combo: No Steal prompts", Color3.fromRGB(255,160,90))
                 wait(1)
             end
-            -- 2. Scan for all Sells and activate them ALL
             sellList = getPrompts("sell")
             if #sellList > 0 then
                 for idx, sellPrompt in ipairs(sellList) do
                     if not runningCombo then break end
                     if sellPrompt and sellPrompt.Parent then
-                        setPromptCycleStatus("Prompt Test: Combo Sell ["..idx.."/"..#sellList.."]", Color3.fromRGB(255,220,60))
+                        setPromptCycleStatus("Combo Sell ["..idx.."/"..#sellList.."]", Color3.fromRGB(230,200,80))
                         tpAndFire(sellPrompt)
                         wait(0.16)
                     end
                 end
             else
-                setPromptCycleStatus("Prompt Test: No Sell Prompts", Color3.fromRGB(255,160,90))
+                setPromptCycleStatus("Combo: No Sell prompts", Color3.fromRGB(255,160,90))
                 wait(1)
             end
             wait(0.07)
         end
-        setPromptCycleStatus("Prompt Test: OFF", Color3.fromRGB(180,180,180))
-        startComboBtn.Text = "START COMBO"
-        startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 80, 255)
+        setPromptCycleStatus("Prompt Exploit: Idle", Color3.fromRGB(205,205,205))
+        startComboBtn.Text = "Combo Exploit"
+        startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 90, 220)
     end)
 end
-
-local function stopComboCycle()
-    runningCombo = false
-end
+local function stopComboCycle() runningCombo = false end
 
 startStealBtn.MouseButton1Click:Connect(function()
     if runningSteal then stopStealCycle() else startStealCycle() end
