@@ -1,3 +1,6 @@
+-- SeriousExploitSuite
+-- Advanced exploit GUI for Roblox with professional features and prompt automation.
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -7,7 +10,7 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 
 -- === GUI SETUP ===
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "SuperRobloxEnhancer"
+screenGui.Name = "SeriousExploitSuite"
 screenGui.Parent = playerGui
 screenGui.ResetOnSpawn = false
 
@@ -45,7 +48,7 @@ local headerBarCorner = Instance.new("UICorner", headerBar)
 headerBarCorner.CornerRadius = UDim.new(0, 14)
 
 local header = Instance.new("TextLabel")
-header.Text = "Project Nova"
+header.Text = "SeriousExploitSuite"
 header.Size = UDim2.new(1, -80, 1, 0)
 header.Position = UDim2.new(0, 16, 0, 0)
 header.BackgroundTransparency = 1
@@ -284,7 +287,7 @@ local function setMinimized(state)
         minimizeButton.Text = "+"
     else
         frame.Position = lastPos
-        tween(frame, {t=0.21}, {Size = openSize})
+        tween(frame, {t=0.21}, {Size=openSize})
         task.delay(0.17, function() contentFrame.Visible = true end)
         minimizeButton.Text = "-"
     end
@@ -436,13 +439,54 @@ UIS.JumpRequest:Connect(function()
     end
 end)
 
+-- --- STEAL PROMPT LOGIC WITH FREE CHECK ---
+local function isStealPromptFree(prompt)
+    local charModel = prompt.Parent and prompt.Parent.Parent
+    if not (charModel and charModel:IsA("Model")) then return false end
+    local head = charModel:FindFirstChild("Head")
+    if not head then return false end
+    local attach = head:FindFirstChild("OverHeadAttachment")
+    if not attach then return false end
+    local charInfo = attach:FindFirstChild("CharacterInfo")
+    if not charInfo then return false end
+    local frame = charInfo:FindFirstChild("Frame")
+    if not frame then return false end
+    local price = frame:FindFirstChild("Price")
+    if price and price:IsA("TextLabel") then
+        local txt = string.lower((price.Text or ""):gsub("%s+", ""))
+        return txt == "free"
+    end
+    return false
+end
+
 local function isSell(prompt)
     local text = string.lower((prompt.ObjectText or "") .. (prompt.ActionText or ""))
     return string.find(text, "sell")
 end
+
 local function isSteal(prompt)
     local text = string.lower((prompt.ObjectText or "") .. (prompt.ActionText or ""))
-    return string.find(text, "steal")
+    if string.find(text, "steal") then
+        if isStealPromptFree(prompt) then
+            return false
+        end
+        return true
+    end
+    return false
+end
+
+local function getPrompts(which)
+    local out = {}
+    for _, obj in ipairs(game:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") then
+            if which == "sell" and isSell(obj) then
+                table.insert(out, obj)
+            elseif which == "steal" and isSteal(obj) then
+                table.insert(out, obj)
+            end
+        end
+    end
+    return out
 end
 
 local function enableStealOrSellPrompt(prompt)
@@ -452,7 +496,6 @@ local function enableStealOrSellPrompt(prompt)
     prompt.Enabled = true
     prompt.Style = Enum.ProximityPromptStyle.Default
     prompt.HoldDuration = prompt.HoldDuration or 0
-
     if not prompt:GetAttribute("_ssprompt_hooked") then
         prompt:SetAttribute("_ssprompt_hooked", true)
         prompt.PromptButtonHoldBegan:Connect(function()
@@ -638,20 +681,6 @@ end)
 -- Prompt Test: Steal/Sell/Combo
 local runningSteal, runningSell, runningCombo = false, false, false
 local stealThread, sellThread, comboThread
-
-local function getPrompts(which)
-    local out = {}
-    for _, obj in ipairs(game:GetDescendants()) do
-        if obj:IsA("ProximityPrompt") then
-            if which == "sell" and isSell(obj) then
-                table.insert(out, obj)
-            elseif which == "steal" and isSteal(obj) then
-                table.insert(out, obj)
-            end
-        end
-    end
-    return out
-end
 
 local function tpAndFire(prompt)
     local root = getCharRoot()
