@@ -1,0 +1,807 @@
+-- SuperRobloxEnhancer: Main GUI and all features, including togglable TouchInterest auto, prompt tests (all steals, all sells, combo mode), and all requested game modifications.
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local ProximityPromptService = game:GetService("ProximityPromptService")
+
+-- === GUI SETUP ===
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SuperRobloxEnhancer"
+screenGui.Parent = playerGui
+screenGui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 430, 0, 0)
+frame.Position = UDim2.new(0.5, -215, 0.8, -210)
+frame.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.ClipsDescendants = true
+frame.Parent = screenGui
+
+local uicorner = Instance.new("UICorner", frame)
+uicorner.CornerRadius = UDim.new(0, 18)
+
+local shadow = Instance.new("ImageLabel")
+shadow.Name = "Shadow"
+shadow.BackgroundTransparency = 1
+shadow.Image = "rbxassetid://1316045217"
+shadow.Size = UDim2.new(1, 24, 1, 24)
+shadow.Position = UDim2.new(-0.03, 0, -0.03, 0)
+shadow.ImageColor3 = Color3.fromRGB(0,0,0)
+shadow.ImageTransparency = 0.7
+shadow.ZIndex = 0
+shadow.Parent = frame
+
+local headerBar = Instance.new("Frame")
+headerBar.Size = UDim2.new(1, 0, 0, 46)
+headerBar.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+headerBar.BorderSizePixel = 0
+headerBar.Parent = frame
+headerBar.ZIndex = 2
+local headerBarCorner = Instance.new("UICorner", headerBar)
+headerBarCorner.CornerRadius = UDim.new(0, 18)
+
+local header = Instance.new("TextLabel")
+header.Text = "✨ Super Roblox Enhancer"
+header.Size = UDim2.new(1, -100, 1, 0)
+header.Position = UDim2.new(0, 16, 0, 0)
+header.BackgroundTransparency = 1
+header.Font = Enum.Font.GothamBlack
+header.TextSize = 24
+header.TextStrokeTransparency = 0.7
+header.TextColor3 = Color3.fromRGB(235,235,235)
+header.TextXAlignment = Enum.TextXAlignment.Left
+header.ZIndex = 3
+header.Parent = headerBar
+
+local closeButton = Instance.new("TextButton")
+closeButton.Text = "✕"
+closeButton.Size = UDim2.new(0, 36, 0, 36)
+closeButton.Position = UDim2.new(1, -44, 0.5, -18)
+closeButton.BackgroundColor3 = Color3.fromRGB(220, 55, 66)
+closeButton.TextColor3 = Color3.fromRGB(255,255,255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 22
+closeButton.ZIndex = 4
+closeButton.BorderSizePixel = 0
+closeButton.Parent = headerBar
+local closeUICorner = Instance.new("UICorner", closeButton)
+closeUICorner.CornerRadius = UDim.new(1,0)
+
+local minimizeButton = Instance.new("TextButton")
+minimizeButton.Text = "_"
+minimizeButton.Size = UDim2.new(0, 34, 0, 34)
+minimizeButton.Position = UDim2.new(1, -86, 0.5, -17)
+minimizeButton.BackgroundColor3 = Color3.fromRGB(38, 38, 38)
+minimizeButton.TextColor3 = Color3.fromRGB(210,210,210)
+minimizeButton.Font = Enum.Font.GothamBold
+minimizeButton.TextSize = 30
+minimizeButton.ZIndex = 4
+minimizeButton.BorderSizePixel = 0
+minimizeButton.Parent = headerBar
+local minUICorner = Instance.new("UICorner", minimizeButton)
+minUICorner.CornerRadius = UDim.new(1,0)
+
+local contentFrame = Instance.new("Frame")
+contentFrame.Name = "Content"
+contentFrame.Size = UDim2.new(1, 0, 1, -46)
+contentFrame.Position = UDim2.new(0, 0, 0, 46)
+contentFrame.BackgroundColor3 = Color3.fromRGB(27,27,27)
+contentFrame.BorderSizePixel = 0
+contentFrame.Parent = frame
+local contentCorner = Instance.new("UICorner", contentFrame)
+contentCorner.CornerRadius = UDim.new(0, 0)
+
+-- Status rows layout
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Parent = contentFrame
+UIListLayout.Padding = UDim.new(0, 8)
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+local function statusRow(text, idx)
+    local label = Instance.new("TextLabel")
+    label.Text = text
+    label.Size = UDim2.new(1, -32, 0, 32)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 18
+    label.TextColor3 = Color3.fromRGB(210, 210, 210)
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.LayoutOrder = idx
+    label.Parent = contentFrame
+    return label
+end
+
+local status1 = statusRow("RobberyDeposit: Size 2048³ (auto)", 1)
+local status2 = statusRow('Deleted all folders named "Barrier"', 2)
+local status3 = statusRow('Deleted all parts named "Wall"', 3)
+local status4 = statusRow('Deleted all folders named "PaidPads"', 4)
+local status5 = statusRow("Speed: 100 (auto)", 5)
+local status6 = statusRow("Infinite Jump: Enabled", 6)
+local status7 = statusRow('Steal/Sell Prompts: Infinite, Instant, Loop', 7)
+
+-- Prompt TP+Activate toggle
+local toggleRow = Instance.new("Frame")
+toggleRow.Size = UDim2.new(1, -32, 0, 32)
+toggleRow.BackgroundTransparency = 1
+toggleRow.LayoutOrder = 8
+toggleRow.Parent = contentFrame
+
+local statusTP = Instance.new("TextLabel")
+statusTP.Text = "Prompt TP+Activate: "
+statusTP.Size = UDim2.new(1, -70, 1, 0)
+statusTP.Position = UDim2.new(0, 0, 0, 0)
+statusTP.BackgroundTransparency = 1
+statusTP.Font = Enum.Font.Gotham
+statusTP.TextSize = 18
+statusTP.TextColor3 = Color3.fromRGB(210, 210, 210)
+statusTP.TextXAlignment = Enum.TextXAlignment.Left
+statusTP.Parent = toggleRow
+
+local toggleBtnTP = Instance.new("TextButton")
+toggleBtnTP.Text = "ON"
+toggleBtnTP.Size = UDim2.new(0, 50, 1, -4)
+toggleBtnTP.Position = UDim2.new(1, -54, 0, 2)
+toggleBtnTP.AnchorPoint = Vector2.new(1,0)
+toggleBtnTP.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
+toggleBtnTP.TextColor3 = Color3.fromRGB(255,255,255)
+toggleBtnTP.Font = Enum.Font.GothamBold
+toggleBtnTP.TextSize = 16
+toggleBtnTP.Parent = toggleRow
+toggleBtnTP.BorderSizePixel = 0
+local toggleUICornerTP = Instance.new("UICorner", toggleBtnTP)
+toggleUICornerTP.CornerRadius = UDim.new(1,0)
+
+-- TouchInterest Auto Trigger toggle
+local tiRow = Instance.new("Frame")
+tiRow.Size = UDim2.new(1, -32, 0, 32)
+tiRow.BackgroundTransparency = 1
+tiRow.LayoutOrder = 9
+tiRow.Parent = contentFrame
+
+local statusTI = Instance.new("TextLabel")
+statusTI.Text = "TouchInterest Auto Trigger: "
+statusTI.Size = UDim2.new(1, -70, 1, 0)
+statusTI.Position = UDim2.new(0, 0, 0, 0)
+statusTI.BackgroundTransparency = 1
+statusTI.Font = Enum.Font.Gotham
+statusTI.TextSize = 18
+statusTI.TextColor3 = Color3.fromRGB(210, 210, 210)
+statusTI.TextXAlignment = Enum.TextXAlignment.Left
+statusTI.Parent = tiRow
+
+local toggleBtnTI = Instance.new("TextButton")
+toggleBtnTI.Text = "ON"
+toggleBtnTI.Size = UDim2.new(0, 50, 1, -4)
+toggleBtnTI.Position = UDim2.new(1, -54, 0, 2)
+toggleBtnTI.AnchorPoint = Vector2.new(1,0)
+toggleBtnTI.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
+toggleBtnTI.TextColor3 = Color3.fromRGB(255,255,255)
+toggleBtnTI.Font = Enum.Font.GothamBold
+toggleBtnTI.TextSize = 16
+toggleBtnTI.Parent = tiRow
+toggleBtnTI.BorderSizePixel = 0
+local toggleUICornerTI = Instance.new("UICorner", toggleBtnTI)
+toggleUICornerTI.CornerRadius = UDim.new(1,0)
+
+-- Prompt Test control row (all Steals / all Sells / Combo)
+local promptTestRow = Instance.new("Frame")
+promptTestRow.Size = UDim2.new(1, -32, 0, 38)
+promptTestRow.BackgroundTransparency = 1
+promptTestRow.LayoutOrder = 10
+promptTestRow.Parent = contentFrame
+
+local startStealBtn = Instance.new("TextButton")
+startStealBtn.Text = "START STEALS"
+startStealBtn.Size = UDim2.new(0.31, -6, 1, -2)
+startStealBtn.Position = UDim2.new(0, 2, 0, 1)
+startStealBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+startStealBtn.TextColor3 = Color3.new(1,1,1)
+startStealBtn.Font = Enum.Font.GothamBold
+startStealBtn.TextSize = 16
+startStealBtn.Parent = promptTestRow
+local btnCorner1 = Instance.new("UICorner", startStealBtn)
+btnCorner1.CornerRadius = UDim.new(1, 0)
+
+local startSellBtn = Instance.new("TextButton")
+startSellBtn.Text = "START SELLS"
+startSellBtn.Size = UDim2.new(0.31, -6, 1, -2)
+startSellBtn.Position = UDim2.new(0.34, 2, 0, 1)
+startSellBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 40)
+startSellBtn.TextColor3 = Color3.new(1,1,1)
+startSellBtn.Font = Enum.Font.GothamBold
+startSellBtn.TextSize = 16
+startSellBtn.Parent = promptTestRow
+local btnCorner2 = Instance.new("UICorner", startSellBtn)
+btnCorner2.CornerRadius = UDim.new(1, 0)
+
+local startComboBtn = Instance.new("TextButton")
+startComboBtn.Text = "START COMBO"
+startComboBtn.Size = UDim2.new(0.31, -6, 1, -2)
+startComboBtn.Position = UDim2.new(0.68, 2, 0, 1)
+startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 80, 255)
+startComboBtn.TextColor3 = Color3.new(1, 1, 1)
+startComboBtn.Font = Enum.Font.GothamBold
+startComboBtn.TextSize = 16
+startComboBtn.Parent = promptTestRow
+local btnCornerCombo = Instance.new("UICorner", startComboBtn)
+btnCornerCombo.CornerRadius = UDim.new(1, 0)
+
+-- Status for prompt cycling
+local statusPromptCycle = statusRow("Prompt Test: OFF", 11)
+
+-- === ANIMATION AND MINIMIZE ===
+local openSize = UDim2.new(0, 430, 0, 520)
+local minSize = UDim2.new(0, 430, 0, 62)
+local minimized = false
+local lastPos = frame.Position
+
+local function tween(obj, info, prop)
+    local t = TweenService:Create(obj, TweenInfo.new(info.t or 0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), prop)
+    t:Play()
+    return t
+end
+
+local function setMinimized(state)
+    minimized = state
+    if state then
+        lastPos = frame.Position
+        tween(frame, {t=0.22}, {Size = minSize})
+        contentFrame.Visible = false
+        minimizeButton.Text = "+"
+    else
+        frame.Position = lastPos
+        tween(frame, {t=0.22}, {Size = openSize})
+        task.delay(0.18, function() contentFrame.Visible = true end)
+        minimizeButton.Text = "_"
+    end
+end
+
+minimizeButton.MouseButton1Click:Connect(function()
+    setMinimized(not minimized)
+end)
+
+local function openAnim()
+    frame.Size = UDim2.new(0, 430, 0, 0)
+    contentFrame.Visible = false
+    local t = tween(frame, {t=0.32}, {Size=openSize})
+    task.delay(0.24, function() contentFrame.Visible = true end)
+end
+
+local function closeAnimAndDestroy()
+    contentFrame.Visible = false
+    local t = tween(frame, {t=0.23}, {Size=UDim2.new(0, 430, 0, 0)})
+    t.Completed:Wait()
+    screenGui:Destroy()
+end
+
+closeButton.MouseButton1Click:Connect(closeAnimAndDestroy)
+
+-- Make frame not snap to initial pos after minimize/maximize (keep lastPos)
+local dragging = false
+local dragInput, dragStart, startPos
+
+headerBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+                lastPos = frame.Position
+            end
+        end)
+    end
+end)
+
+headerBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        lastPos = frame.Position
+    end
+end)
+
+openAnim()
+
+-- === FUNCTIONALITY ===
+
+local targetSize = Vector3.new(2048, 2048, 2048)
+local function resizeRobberyDeposit(part)
+    if part:IsA("BasePart") and part.Name == "RobberyDeposit" then
+        if (part.Size - targetSize).magnitude > 0.1 then
+            part.Size = targetSize
+        end
+    end
+end
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+    if obj:IsA("BasePart") and obj.Name == "RobberyDeposit" then
+        resizeRobberyDeposit(obj)
+    end
+end
+
+workspace.DescendantAdded:Connect(function(obj)
+    if obj:IsA("BasePart") and obj.Name == "RobberyDeposit" then
+        resizeRobberyDeposit(obj)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and obj.Name == "RobberyDeposit" then
+                resizeRobberyDeposit(obj)
+            end
+        end
+        task.wait(2)
+    end
+end)
+
+local function delBarrier(obj)
+    if obj:IsA("Folder") and obj.Name == "Barrier" then
+        pcall(function() obj:Destroy() end)
+    end
+end
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+    delBarrier(obj)
+end
+
+workspace.DescendantAdded:Connect(function(obj)
+    delBarrier(obj)
+end)
+
+task.spawn(function()
+    while true do
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            delBarrier(obj)
+        end
+        task.wait(2)
+    end
+end)
+
+local function delWall(obj)
+    if obj:IsA("BasePart") and obj.Name == "Wall" then
+        pcall(function() obj:Destroy() end)
+    end
+end
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+    delWall(obj)
+end
+
+workspace.DescendantAdded:Connect(function(obj)
+    delWall(obj)
+end)
+
+task.spawn(function()
+    while true do
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            delWall(obj)
+        end
+        task.wait(2)
+    end
+end)
+
+local function delPaidPads(obj)
+    if obj:IsA("Folder") and obj.Name == "PaidPads" then
+        pcall(function() obj:Destroy() end)
+    end
+end
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+    delPaidPads(obj)
+end
+
+workspace.DescendantAdded:Connect(function(obj)
+    delPaidPads(obj)
+end)
+
+task.spawn(function()
+    while true do
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            delPaidPads(obj)
+        end
+        task.wait(2)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hum = char and char:FindFirstChildWhichIsA("Humanoid")
+        if hum and hum.WalkSpeed ~= 100 then
+            hum.WalkSpeed = 100
+        end
+        task.wait(0.2)
+    end
+end)
+
+UIS.JumpRequest:Connect(function()
+    local char = player.Character
+    local hum = char and char:FindFirstChildWhichIsA("Humanoid")
+    if hum then
+        hum:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+
+local function isSell(prompt)
+    local text = string.lower((prompt.ObjectText or "") .. (prompt.ActionText or ""))
+    return string.find(text, "sell")
+end
+local function isSteal(prompt)
+    local text = string.lower((prompt.ObjectText or "") .. (prompt.ActionText or ""))
+    return string.find(text, "steal")
+end
+
+local function enableStealOrSellPrompt(prompt)
+    prompt.MaxActivationDistance = math.huge
+    prompt.RequiresLineOfSight = false
+    prompt.Exclusivity = Enum.ProximityPromptExclusivity.OneGlobally
+    prompt.Enabled = true
+    prompt.Style = Enum.ProximityPromptStyle.Default
+    prompt.HoldDuration = prompt.HoldDuration or 0
+
+    if not prompt:GetAttribute("_ssprompt_hooked") then
+        prompt:SetAttribute("_ssprompt_hooked", true)
+        prompt.PromptButtonHoldBegan:Connect(function()
+            pcall(function() fireproximityprompt(prompt) end)
+        end)
+    end
+end
+
+local function checkPrompt(prompt)
+    if isSteal(prompt) or isSell(prompt) then
+        enableStealOrSellPrompt(prompt)
+    end
+end
+
+for _, obj in ipairs(game:GetDescendants()) do
+    if obj:IsA("ProximityPrompt") then
+        checkPrompt(obj)
+    end
+end
+
+game.DescendantAdded:Connect(function(obj)
+    if obj:IsA("ProximityPrompt") then
+        checkPrompt(obj)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        for _, prompt in ipairs(workspace:GetDescendants()) do
+            if prompt:IsA("ProximityPrompt") and not prompt:GetAttribute("_ssprompt_hooked") then
+                if isSteal(prompt) or isSell(prompt) then
+                    enableStealOrSellPrompt(prompt)
+                end
+            end
+        end
+        task.wait(2)
+    end
+end)
+
+local autoPromptTP = true
+
+local function setToggleTP(state)
+    if state then
+        toggleBtnTP.Text = "ON"
+        toggleBtnTP.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
+        statusTP.Text = "Prompt TP+Activate: ON"
+        statusTP.TextColor3 = Color3.fromRGB(180,255,180)
+    else
+        toggleBtnTP.Text = "OFF"
+        toggleBtnTP.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+        statusTP.Text = "Prompt TP+Activate: OFF"
+        statusTP.TextColor3 = Color3.fromRGB(255,180,180)
+    end
+end
+
+setToggleTP(true)
+
+toggleBtnTP.MouseButton1Click:Connect(function()
+    autoPromptTP = not autoPromptTP
+    setToggleTP(autoPromptTP)
+end)
+
+local function getCharRoot()
+    local char = player.Character or player.CharacterAdded:Wait()
+    return char and char:FindFirstChild("HumanoidRootPart")
+end
+
+local function getPromptPart(prompt)
+    local part = prompt.Parent
+    if part:IsA("Attachment") or part:IsA("ProximityPrompt") then
+        part = part.Parent
+    end
+    if part:IsA("Model") and part.PrimaryPart then
+        part = part.PrimaryPart
+    end
+    if not part:IsA("BasePart") then
+        for _, child in ipairs(part:GetChildren()) do
+            if child:IsA("BasePart") then
+                part = child
+                break
+            end
+        end
+    end
+    return part
+end
+
+ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
+    if not autoPromptTP then return end
+    local root = getCharRoot()
+    local part = getPromptPart(prompt)
+    if root and part and part:IsA("BasePart") then
+        pcall(function() ProximityPromptService.PromptButtonHoldEnded:Fire(prompt) end)
+        task.wait(0.03)
+        root.CFrame = part.CFrame * CFrame.new(0, 3, 0)
+        task.wait(0.1)
+        local wasEnabled = prompt.Enabled
+        prompt.Enabled = false
+        task.wait(0.05)
+        prompt.Enabled = wasEnabled
+        task.wait(0.05)
+        pcall(function() fireproximityprompt(prompt) end)
+    end
+end)
+
+local tiAutoTrigger = true
+
+local function setToggleTI(state)
+    if state then
+        toggleBtnTI.Text = "ON"
+        toggleBtnTI.BackgroundColor3 = Color3.fromRGB(33, 200, 112)
+        statusTI.Text = "TouchInterest Auto Trigger: ON"
+        statusTI.TextColor3 = Color3.fromRGB(180,255,180)
+    else
+        toggleBtnTI.Text = "OFF"
+        toggleBtnTI.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+        statusTI.Text = "TouchInterest Auto Trigger: OFF"
+        statusTI.TextColor3 = Color3.fromRGB(255,180,180)
+    end
+end
+
+setToggleTI(true)
+
+toggleBtnTI.MouseButton1Click:Connect(function()
+    tiAutoTrigger = not tiAutoTrigger
+    setToggleTI(tiAutoTrigger)
+end)
+
+local function ensureTouchInterest(part)
+    if not part:FindFirstChildOfClass("TouchTransmitter") then
+        local ti = Instance.new("TouchTransmitter")
+        ti.Parent = part
+    end
+end
+
+local function fireTouch(part)
+    local char = player.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    pcall(function()
+        firetouchinterest(root, part, 0)
+        task.wait(0.05)
+        firetouchinterest(root, part, 1)
+    end)
+end
+
+task.spawn(function()
+    while true do
+        if tiAutoTrigger then
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("BasePart") and obj.Name == "LockButton" then
+                    ensureTouchInterest(obj)
+                    fireTouch(obj)
+                end
+            end
+        end
+        task.wait(1)
+    end
+end)
+
+-- Prompt Test: Steal/Sell/Combo
+local runningSteal, runningSell, runningCombo = false, false, false
+local stealThread, sellThread, comboThread
+
+local function getPrompts(which)
+    local out = {}
+    for _, obj in ipairs(game:GetDescendants()) do
+        if obj:IsA("ProximityPrompt") then
+            if which == "sell" and isSell(obj) then
+                table.insert(out, obj)
+            elseif which == "steal" and isSteal(obj) then
+                table.insert(out, obj)
+            end
+        end
+    end
+    return out
+end
+
+local function tpAndFire(prompt)
+    local root = getCharRoot()
+    local part = getPromptPart(prompt)
+    if root and part and part:IsA("BasePart") then
+        root.CFrame = part.CFrame * CFrame.new(0, 3, 0)
+        wait(0.1)
+        local wasEnabled = prompt.Enabled
+        prompt.Enabled = false
+        wait(0.04)
+        prompt.Enabled = wasEnabled
+        wait(0.07)
+        pcall(function() fireproximityprompt(prompt) end)
+    end
+end
+
+local function setPromptCycleStatus(txt, col)
+    statusPromptCycle.Text = txt
+    if col then statusPromptCycle.TextColor3 = col end
+end
+
+local function startStealCycle()
+    if runningSteal then return end
+    runningSteal = true
+    runningSell = false
+    runningCombo = false
+    setPromptCycleStatus("Prompt Test: Steals RUNNING", Color3.fromRGB(60,220,255))
+    startStealBtn.Text = "STOP STEALS"
+    startStealBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 220)
+    startSellBtn.Text = "START SELLS"
+    startSellBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 40)
+    startComboBtn.Text = "START COMBO"
+    startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 80, 255)
+    stealThread = task.spawn(function()
+        while runningSteal do
+            local stealList = getPrompts("steal")
+            if #stealList == 0 then
+                setPromptCycleStatus("Prompt Test: No Steal Prompts", Color3.fromRGB(255,160,90))
+                wait(2)
+                continue
+            end
+            for idx, prompt in ipairs(stealList) do
+                if not runningSteal then break end
+                if prompt and prompt.Parent then
+                    setPromptCycleStatus("Prompt Test: Steal "..idx.."/"..#stealList, Color3.fromRGB(60,220,255))
+                    tpAndFire(prompt)
+                    wait(0.22)
+                end
+            end
+        end
+        setPromptCycleStatus("Prompt Test: OFF", Color3.fromRGB(180,180,180))
+        startStealBtn.Text = "START STEALS"
+        startStealBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+    end)
+end
+
+local function stopStealCycle()
+    runningSteal = false
+end
+
+local function startSellCycle()
+    if runningSell then return end
+    runningSteal = false
+    runningSell = true
+    runningCombo = false
+    setPromptCycleStatus("Prompt Test: Sells RUNNING", Color3.fromRGB(255,220,60))
+    startSellBtn.Text = "STOP SELLS"
+    startSellBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 60)
+    startStealBtn.Text = "START STEALS"
+    startStealBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+    startComboBtn.Text = "START COMBO"
+    startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 80, 255)
+    sellThread = task.spawn(function()
+        while runningSell do
+            local sellList = getPrompts("sell")
+            if #sellList == 0 then
+                setPromptCycleStatus("Prompt Test: No Sell Prompts", Color3.fromRGB(255,160,90))
+                wait(2)
+                continue
+            end
+            for idx, prompt in ipairs(sellList) do
+                if not runningSell then break end
+                if prompt and prompt.Parent then
+                    setPromptCycleStatus("Prompt Test: Sell "..idx.."/"..#sellList, Color3.fromRGB(255,220,60))
+                    tpAndFire(prompt)
+                    wait(0.22)
+                end
+            end
+        end
+        setPromptCycleStatus("Prompt Test: OFF", Color3.fromRGB(180,180,180))
+        startSellBtn.Text = "START SELLS"
+        startSellBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 40)
+    end)
+end
+
+local function stopSellCycle()
+    runningSell = false
+end
+
+local function startComboCycle()
+    if runningCombo then return end
+    runningSteal = false
+    runningSell = false
+    runningCombo = true
+    setPromptCycleStatus("Prompt Test: Combo RUNNING", Color3.fromRGB(140, 120, 255))
+    startComboBtn.Text = "STOP COMBO"
+    startComboBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 220)
+    startStealBtn.Text = "START STEALS"
+    startStealBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+    startSellBtn.Text = "START SELLS"
+    startSellBtn.BackgroundColor3 = Color3.fromRGB(255, 180, 40)
+    comboThread = task.spawn(function()
+        local stealIndex = 1
+        while runningCombo do
+            local stealList = getPrompts("steal")
+            local sellList = getPrompts("sell")
+            -- 1. TP to next Steal
+            if #stealList > 0 then
+                local stealPrompt = stealList[(stealIndex - 1) % #stealList + 1]
+                if stealPrompt and stealPrompt.Parent then
+                    setPromptCycleStatus("Prompt Test: Combo Steal ["..stealIndex.."/"..#stealList.."]", Color3.fromRGB(60,220,255))
+                    tpAndFire(stealPrompt)
+                    stealIndex = stealIndex + 1
+                    wait(0.24)
+                end
+            else
+                setPromptCycleStatus("Prompt Test: No Steal Prompts", Color3.fromRGB(255,160,90))
+                wait(1)
+            end
+            -- 2. Scan for all Sells and activate them ALL
+            sellList = getPrompts("sell")
+            if #sellList > 0 then
+                for idx, sellPrompt in ipairs(sellList) do
+                    if not runningCombo then break end
+                    if sellPrompt and sellPrompt.Parent then
+                        setPromptCycleStatus("Prompt Test: Combo Sell ["..idx.."/"..#sellList.."]", Color3.fromRGB(255,220,60))
+                        tpAndFire(sellPrompt)
+                        wait(0.16)
+                    end
+                end
+            else
+                setPromptCycleStatus("Prompt Test: No Sell Prompts", Color3.fromRGB(255,160,90))
+                wait(1)
+            end
+            wait(0.07)
+        end
+        setPromptCycleStatus("Prompt Test: OFF", Color3.fromRGB(180,180,180))
+        startComboBtn.Text = "START COMBO"
+        startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 80, 255)
+    end)
+end
+
+local function stopComboCycle()
+    runningCombo = false
+end
+
+startStealBtn.MouseButton1Click:Connect(function()
+    if runningSteal then stopStealCycle() else startStealCycle() end
+end)
+startSellBtn.MouseButton1Click:Connect(function()
+    if runningSell then stopSellCycle() else startSellCycle() end
+end)
+startComboBtn.MouseButton1Click:Connect(function()
+    if runningCombo then stopComboCycle() else startComboCycle() end
+end)
+
+screenGui.AncestryChanged:Connect(function(_, parent)
+    if not parent then
+        runningSteal = false
+        runningSell = false
+        runningCombo = false
+    end
+end)
