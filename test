@@ -217,6 +217,7 @@ local toggleUICornerCollect = Instance.new("UICorner", toggleBtnCollect)
 toggleUICornerCollect.CornerRadius = UDim.new(1,0)
 
 -- Prompt Test control row (all Steals / all Sells / Combo)
+
 local promptTestRow = Instance.new("Frame")
 promptTestRow.Size = UDim2.new(1, -30, 0, 33)
 promptTestRow.BackgroundTransparency = 1
@@ -225,7 +226,7 @@ promptTestRow.Parent = contentFrame
 
 local startStealBtn = Instance.new("TextButton")
 startStealBtn.Text = "Steal Exploit"
-startStealBtn.Size = UDim2.new(0.31, -4, 1, -2)
+startStealBtn.Size = UDim2.new(0.23, -4, 1, -2)
 startStealBtn.Position = UDim2.new(0, 2, 0, 1)
 startStealBtn.BackgroundColor3 = Color3.fromRGB(30, 140, 210)
 startStealBtn.TextColor3 = Color3.new(1,1,1)
@@ -237,8 +238,8 @@ btnCorner1.CornerRadius = UDim.new(1, 0)
 
 local startSellBtn = Instance.new("TextButton")
 startSellBtn.Text = "Sell Exploit"
-startSellBtn.Size = UDim2.new(0.31, -4, 1, -2)
-startSellBtn.Position = UDim2.new(0.34, 2, 0, 1)
+startSellBtn.Size = UDim2.new(0.23, -4, 1, -2)
+startSellBtn.Position = UDim2.new(0.24, 2, 0, 1)
 startSellBtn.BackgroundColor3 = Color3.fromRGB(200, 160, 40)
 startSellBtn.TextColor3 = Color3.new(1,1,1)
 startSellBtn.Font = Enum.Font.GothamBold
@@ -249,8 +250,8 @@ btnCorner2.CornerRadius = UDim.new(1, 0)
 
 local startComboBtn = Instance.new("TextButton")
 startComboBtn.Text = "Combo Exploit"
-startComboBtn.Size = UDim2.new(0.31, -4, 1, -2)
-startComboBtn.Position = UDim2.new(0.68, 2, 0, 1)
+startComboBtn.Size = UDim2.new(0.23, -4, 1, -2)
+startComboBtn.Position = UDim2.new(0.48, 2, 0, 1)
 startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 90, 220)
 startComboBtn.TextColor3 = Color3.new(1, 1, 1)
 startComboBtn.Font = Enum.Font.GothamBold
@@ -259,76 +260,37 @@ startComboBtn.Parent = promptTestRow
 local btnCornerCombo = Instance.new("UICorner", startComboBtn)
 btnCornerCombo.CornerRadius = UDim.new(1, 0)
 
-local statusPromptCycle = statusRow("Prompt Exploit: Idle", 12)
+-- 5 Steal Toggle Button
+local steal5Btn = Instance.new("TextButton")
+steal5Btn.Text = "5 Steal"
+steal5Btn.Size = UDim2.new(0.23, -4, 1, -2)
+steal5Btn.Position = UDim2.new(0.72, 2, 0, 1)
+steal5Btn.BackgroundColor3 = Color3.fromRGB(60, 200, 180)
+steal5Btn.TextColor3 = Color3.new(1, 1, 1)
+steal5Btn.Font = Enum.Font.GothamBold
+steal5Btn.TextSize = 15
+steal5Btn.Parent = promptTestRow
+steal5Btn.BorderSizePixel = 0
+local btnCorner5 = Instance.new("UICorner", steal5Btn)
+btnCorner5.CornerRadius = UDim.new(1, 0)
 
--- === COMBO STEAL COUNT SLIDER ===
-local comboSliderRow = Instance.new("Frame")
-comboSliderRow.Size = UDim2.new(1, -30, 0, 24)
-comboSliderRow.BackgroundTransparency = 1
-comboSliderRow.LayoutOrder = 12.5
-comboSliderRow.Parent = contentFrame
-
-local comboSliderLabel = Instance.new("TextLabel")
-comboSliderLabel.Text = "Combo Steals: 5"
-comboSliderLabel.Size = UDim2.new(0, 110, 1, 0)
-comboSliderLabel.Position = UDim2.new(0, 0, 0, 0)
-comboSliderLabel.BackgroundTransparency = 1
-comboSliderLabel.Font = Enum.Font.Gotham
-comboSliderLabel.TextSize = 13
-comboSliderLabel.TextColor3 = Color3.fromRGB(205, 205, 205)
-comboSliderLabel.TextXAlignment = Enum.TextXAlignment.Left
-comboSliderLabel.Parent = comboSliderRow
-
-local comboSlider = Instance.new("TextButton")
-comboSlider.Size = UDim2.new(0, 120, 1, -6)
-comboSlider.Position = UDim2.new(0, 120, 0, 3)
-comboSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-comboSlider.Text = ""
-comboSlider.Parent = comboSliderRow
-comboSlider.BorderSizePixel = 0
-local comboSliderCorner = Instance.new("UICorner", comboSlider)
-comboSliderCorner.CornerRadius = UDim.new(1, 0)
-
-local sliderKnob = Instance.new("Frame")
-sliderKnob.Size = UDim2.new(0, 16, 1, 0)
-sliderKnob.Position = UDim2.new(0.4, 0, 0, 0)
-sliderKnob.BackgroundColor3 = Color3.fromRGB(100, 180, 255)
-sliderKnob.Parent = comboSlider
-sliderKnob.BorderSizePixel = 0
-local sliderKnobCorner = Instance.new("UICorner", sliderKnob)
-sliderKnobCorner.CornerRadius = UDim.new(1, 0)
-
-local comboStealCount = 5
-local draggingSlider = false
-
-local function updateSliderDisplay(val)
-    comboSliderLabel.Text = "Combo Steals: "..val
-    local percent = (val-1)/9
-    sliderKnob.Position = UDim2.new(percent, 0, 0, 0)
+local steal5Enabled = false
+local function setSteal5Btn(state)
+    steal5Enabled = state
+    if state then
+        steal5Btn.Text = "5 Steal: ON"
+        steal5Btn.BackgroundColor3 = Color3.fromRGB(30, 180, 120)
+    else
+        steal5Btn.Text = "5 Steal: OFF"
+        steal5Btn.BackgroundColor3 = Color3.fromRGB(60, 200, 180)
+    end
 end
-updateSliderDisplay(comboStealCount)
+setSteal5Btn(false)
+steal5Btn.MouseButton1Click:Connect(function()
+    setSteal5Btn(not steal5Enabled)
+end)
 
-comboSlider.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        draggingSlider = true
-    end
-end)
-comboSlider.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        draggingSlider = false
-    end
-end)
-comboSlider.InputChanged:Connect(function(input)
-    if draggingSlider and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local absPos = comboSlider.AbsolutePosition.X
-        local absSize = comboSlider.AbsoluteSize.X
-        local mouseX = input.Position.X
-        local rel = math.clamp((mouseX - absPos) / absSize, 0, 1)
-        local val = math.floor(rel * 9 + 1 + 0.5)
-        comboStealCount = val
-        updateSliderDisplay(val)
-    end
-end)
+local statusPromptCycle = statusRow("Prompt Exploit: Idle", 12)
 
 -- === RARITY ESP TOGGLES ===
 local rarityList = {"Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"}
@@ -502,61 +464,61 @@ local function openAnim()
     task.delay(0.23, function() contentFrame.Visible = true end)
 end
 
-local function startComboCycle()
-    if runningCombo then return end
-    runningSteal = false
-    runningSell = false
-    runningCombo = true
-    setPromptCycleStatus("Combo Exploit: Running", Color3.fromRGB(170,120,255))
-    startComboBtn.Text = "Stop Combo"
-    startComboBtn.BackgroundColor3 = Color3.fromRGB(190, 60, 120)
-    startStealBtn.Text = "Steal Exploit"
-    startStealBtn.BackgroundColor3 = Color3.fromRGB(30, 140, 210)
-    startSellBtn.Text = "Sell Exploit"
-    startSellBtn.BackgroundColor3 = Color3.fromRGB(200, 160, 40)
-    comboThread = task.spawn(function()
-        local stealIndex = 1
-        while runningCombo do
-            local stealList = getPrompts("steal")
-            local sellList = getPrompts("sell")
-            -- Do N steals (N = comboStealCount)
-            for i = 1, comboStealCount do
-                if not runningCombo then break end
-                if #stealList > 0 then
-                    local stealPrompt = stealList[(stealIndex - 1) % #stealList + 1]
-                    if stealPrompt and stealPrompt.Parent then
-                        setPromptCycleStatus("Combo Steal ["..stealIndex.."/"..#stealList.."]", Color3.fromRGB(80,180,255))
-                        tpAndFire(stealPrompt)
-                        stealIndex = stealIndex + 1
-                        wait(0.07)
-                    end
-                else
-                    setPromptCycleStatus("Combo: No Steal prompts", Color3.fromRGB(255,160,90))
-                    wait(0.2)
-                end
-            end
-            -- Then sell all
-            sellList = getPrompts("sell")
-            if #sellList > 0 then
-                for idx, sellPrompt in ipairs(sellList) do
-                    if not runningCombo then break end
-                    if sellPrompt and sellPrompt.Parent then
-                        setPromptCycleStatus("Combo Sell ["..idx.."/"..#sellList.."]", Color3.fromRGB(230,200,80))
-                        tpAndFire(sellPrompt)
-                        wait(0.04)
-                    end
-                end
-            else
-                setPromptCycleStatus("Combo: No Sell prompts", Color3.fromRGB(255,160,90))
-                wait(0.2)
-            end
-            wait(0.02)
-        end
-        setPromptCycleStatus("Prompt Exploit: Idle", Color3.fromRGB(205,205,205))
-        startComboBtn.Text = "Combo Exploit"
-        startComboBtn.BackgroundColor3 = Color3.fromRGB(100, 90, 220)
-    end)
+local function closeAnimAndDestroy()
+    contentFrame.Visible = false
+    tween(frame, {t=0.21}, {Size=UDim2.new(0, 420, 0, 0)}).Completed:Wait()
+    screenGui:Destroy()
 end
+
+closeButton.MouseButton1Click:Connect(closeAnimAndDestroy)
+
+local dragging, dragInput, dragStart, startPos
+headerBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+                lastPos = frame.Position
+            end
+        end)
+    end
+end)
+headerBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        lastPos = frame.Position
+    end
+end)
+
+openAnim()
+
+-- === MAIN FUNCTIONALITY ===
+
+local targetSize = Vector3.new(2048, 2048, 2048)
+local function resizeRobberyDeposit(part)
+    if part:IsA("BasePart") and part.Name == "RobberyDeposit" then
+        if (part.Size - targetSize).magnitude > 0.1 then
+            part.Size = targetSize
+        end
+    end
+end
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+    if obj:IsA("BasePart") and obj.Name == "RobberyDeposit" then
+        resizeRobberyDeposit(obj)
+    end
+end
+
+workspace.DescendantAdded:Connect(function(obj)
     if obj:IsA("BasePart") and obj.Name == "RobberyDeposit" then
         resizeRobberyDeposit(obj)
     end
@@ -1001,12 +963,25 @@ local function startComboCycle()
             local stealList = getPrompts("steal")
             local sellList = getPrompts("sell")
             if #stealList > 0 then
-                local stealPrompt = stealList[(stealIndex - 1) % #stealList + 1]
-                if stealPrompt and stealPrompt.Parent then
-                    setPromptCycleStatus("Combo Steal ["..stealIndex.."/"..#stealList.."]", Color3.fromRGB(80,180,255))
-                    tpAndFire(stealPrompt)
-                    stealIndex = stealIndex + 1
-                    wait(0.07)
+                if steal5Enabled then
+                    for i = 1, math.min(5, #stealList) do
+                        if not runningCombo then break end
+                        local stealPrompt = stealList[(stealIndex - 1) % #stealList + 1]
+                        if stealPrompt and stealPrompt.Parent then
+                            setPromptCycleStatus("Combo Steal ["..stealIndex.."/"..#stealList.."] (x5)", Color3.fromRGB(80,180,255))
+                            tpAndFire(stealPrompt)
+                            stealIndex = stealIndex + 1
+                            wait(0.07)
+                        end
+                    end
+                else
+                    local stealPrompt = stealList[(stealIndex - 1) % #stealList + 1]
+                    if stealPrompt and stealPrompt.Parent then
+                        setPromptCycleStatus("Combo Steal ["..stealIndex.."/"..#stealList.."]", Color3.fromRGB(80,180,255))
+                        tpAndFire(stealPrompt)
+                        stealIndex = stealIndex + 1
+                        wait(0.07)
+                    end
                 end
             else
                 setPromptCycleStatus("Combo: No Steal prompts", Color3.fromRGB(255,160,90))
